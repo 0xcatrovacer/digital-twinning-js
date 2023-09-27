@@ -7,7 +7,23 @@ const createParameters = (count) => {
     }
     return params.join(",");
 };
+const getDataFromDB = async() => {
+    const pool = getDBPool();
+    let client;
 
+    try{
+        client = await pool.connect();
+        const x = 'SELECT * FROM public.sensor_data SORT BY timestamp DESC LIMIT 1';
+        const {rows} = await client.query(x);
+
+        return rows[0];
+    } catch(e){
+        console.log(`Error in inserting to DB: `, e);
+    }finally {
+        client && client.release();
+        pool && pool.end();
+    }
+}
 const insertDataIntoDB = async (
     acc_x_latest,
     acc_y_latest,
@@ -20,7 +36,7 @@ const insertDataIntoDB = async (
     mgm_z
 ) => {
     const pool = getDBPool();
-    let client;
+    let client = ;
         
     try {
         client = await pool.connect();
