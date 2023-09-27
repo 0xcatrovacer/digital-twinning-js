@@ -52,6 +52,9 @@ const insertDataIntoDB = async (
         let position_z_latest = parseFloat((position_z + velo_z * time_interval + 0.5 * acc_z_latest * time_interval * time_interval).toPrecision(2));
 
         // Calculating latest angular position
+        let angular_position_x_latest = parseFloat((angular_position_x + angular_velo_x_latest * time_interval).toPrecision(2));
+        let angular_position_y_latest = parseFloat((angular_position_y + angular_velo_y_latest * time_interval).toPrecision(2));
+        let angular_position_z_latest = parseFloat((angular_position_z + angular_velo_z_latest * time_interval).toPrecision(2));
 
         // Columns and values to be inserted
         const columns = [
@@ -90,9 +93,9 @@ const insertDataIntoDB = async (
             angular_velo_x_latest,
             angular_velo_y_latest,
             angular_velo_z_latest,
-            1,
-            2,
-            3,
+            angular_position_x_latest,
+            angular_position_y_latest,
+            angular_position_z_latest,
             mgm_x,
             mgm_y,
             mgm_z
