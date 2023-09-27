@@ -1,6 +1,6 @@
 const {Pool} = require('pg');
 
-const getDBPool = (concurrencyCount = 1) => {
+const getDBPool = (concurrencyCount = 25) => {
     return new Pool({
         concurrencyCount: concurrencyCount,
         user: process.env.DB_USER,
