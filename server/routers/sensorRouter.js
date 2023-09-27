@@ -1,6 +1,6 @@
 const express = require('express');
 
-const router = new express.Router();
+const sensorRouter = new express.Router();
 
 router.post('/sensor/insert-data', async (req, res) => {
     const {
@@ -33,3 +33,7 @@ router.post('/sensor/insert-data', async (req, res) => {
         res.status(500).send({status: 'failure'})
     }
 })
+
+module.exports = {
+    sensorRouter
+}
