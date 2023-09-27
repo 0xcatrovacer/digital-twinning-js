@@ -14,7 +14,10 @@ const insertDataIntoDB = async (
     acc_z_latest,
     angular_velo_x_latest,
     angular_velo_y_latest,
-    angular_velo_z_latest
+    angular_velo_z_latest,
+    mgm_x,
+    mgm_y,
+    mgm_z
 ) => {
     const pool = getDBPool();
     let client;
@@ -68,6 +71,9 @@ const insertDataIntoDB = async (
             'angular_position_x',
             'angular_position_y',
             'angular_position_z',
+            'mgm_x',
+            'mgm_y',
+            'mgm_z'
         ]
 
         values = [
@@ -86,7 +92,10 @@ const insertDataIntoDB = async (
             angular_velo_z_latest,
             1,
             2,
-            3
+            3,
+            mgm_x,
+            mgm_y,
+            mgm_z
         ]
 
         const paramsQuery = createParameters(columns.length);

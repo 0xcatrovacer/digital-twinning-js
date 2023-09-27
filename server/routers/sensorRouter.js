@@ -9,7 +9,10 @@ router.post('/sensor/insert-data', async (req, res) => {
         acc_z, 
         angular_velo_x, 
         angular_velo_y, 
-        angular_velo_z
+        angular_velo_z,
+        mgm_x,
+        mgm_y,
+        mgm_z
     } = req.body
 
     try {
@@ -19,7 +22,10 @@ router.post('/sensor/insert-data', async (req, res) => {
             acc_z, 
             angular_velo_x, 
             angular_velo_y, 
-            angular_velo_z
+            angular_velo_z,
+            mgm_x,
+            mgm_y,
+            mgm_z
         );
 
         res.status(200).send({status: 'ok'})
