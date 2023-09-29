@@ -7,24 +7,27 @@ const createParameters = (count) => {
     }
     return params.join(",");
 };
+
 const getDataFromDB = async() => {
     const pool = getDBPool();
     let client;
 
     try{
         client = await pool.connect();
-        const x = 'SELECT * FROM public.sensor_data SORT BY timestamp DESC LIMIT 1';
+        const x = 'SELECT * FROM public.sensor_data ORDER BY timestamp DESC LIMIT 1';
         const {rows} = await client.query(x);
 
         return rows[0];
     } catch(e){
         console.log(`Error in inserting to DB: `, e);
-    }finally {
+    } finally {
         client && client.release();
         pool && pool.end();
     }
 }
+
 const insertDataIntoDB = async (
+    client,
     acc_x_latest,
     acc_y_latest,
     acc_z_latest,
@@ -33,19 +36,15 @@ const insertDataIntoDB = async (
     angular_velo_z_latest,
     mgm_x,
     mgm_y,
-    mgm_z
-) => {
-    const pool = getDBPool();
-    let client = ;
-        
+    mgm_z,
+    time_interval
+) => {  
     try {
-        client = await pool.connect();
-
         // Getting last values from DB
-        const getLastValuesQuery = `SELECT * FROM public.sensor_data SORT BY timestamp DESC LIMIT 1`;
+        const getLastValuesQuery = `SELECT * FROM public.sensor_data ORDER BY timestamp DESC LIMIT 1`;
         const {rows} = await client.query(getLastValuesQuery);
 
-        const {
+        let {
             velo_x,
             velo_y,
             velo_z,
@@ -56,6 +55,16 @@ const insertDataIntoDB = async (
             angular_position_y,
             angular_position_z
         } = rows[0];
+
+        velo_x = parseFloat(velo_x);
+        velo_y = parseFloat(velo_y);
+        velo_z = parseFloat(velo_z);
+        position_x = parseFloat(position_x);
+        position_y = parseFloat(position_y);
+        position_z = parseFloat(position_z);
+        angular_position_x = parseFloat(angular_position_x);
+        angular_position_y = parseFloat(angular_position_y);
+        angular_position_z = parseFloat(angular_position_z);
 
         // Calculating latest linear velocity
         let velo_x_latest = parseFloat((velo_x + time_interval * acc_x_latest).toPrecision(2));
@@ -124,9 +133,6 @@ const insertDataIntoDB = async (
         await client.query(insertQuery, values);
     } catch (e) {
         console.log(`Error in inserting to DB: `, e);
-    } finally {
-        client && client.release();
-        pool && pool.end();
     }
 }
 
