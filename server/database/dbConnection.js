@@ -1,4 +1,5 @@
 const {Pool} = require('pg');
+require('dotenv').config();
 
 const getDBPool = (concurrencyCount = 25) => {
     return new Pool({
