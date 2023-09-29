@@ -1,0 +1,49 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Roboto, sans-serif;
+    overflow: hidden;
+}
+
+h1 {
+    position: relative;
+    justify-content: center;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.left-side {
+    padding-left: 20px;
+    width: 50%;
+}
+
+.right-side {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#sensor-3d {
+    transition: transform 0.2s ease;
+}
+
+/* Media query for responsiveness */
+@media (max-width: 750px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-side,
+    .right-side {
+        width: 100%;
+    }
+}
