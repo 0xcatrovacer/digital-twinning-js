@@ -2,8 +2,10 @@ const express = require('express')
 const { pool } = require('pg')
 const { getDBPool } = require('./database/dbConnection')
 const { sensorRouter } = require('./routers/sensorRouter')
+const { insertDataIntoDB } = require('./helpers/sensorHelper')
 const net = require('net')
 const http = require('http')
+const { error } = require('console')
 const app = express()
 const port = process.env.PORT || 8000
 const pgClient = getDBPool()
@@ -20,62 +22,34 @@ socket.on('connect', (connect) => {
   socket.setEncoding('utf-8')
 })
 
-socket.on('data', function (data) {
-  let jsondata = JSON.parse(data)
-  let {
-    timestamp,
-    acc_x,
-    acc_y,
-    acc_z,
-    velo_x,
-    velo_y,
-    velo_z,
-    postition_x,
-    postition_y,
-    postition_z,
-    angular_velo_x,
-    angular_velo_y,
-    angular_velo_z,
-    angular_postition_x,
-    angular_postition_y,
-    angular_postition_z,
-    mgm_x,
-    mgm_y,
-    mgm_z,
-  } = jsondata
-  let insertQuery =
-    'INSERT INTO sensor_data (timestamp, acc_x,  acc_y, acc_z, velo_x, velo_y, velo_z, postition_x, postition_y, postition_z, angular_velo_x, angular_velo_y, angular_velo_z, angular_postition_x, angular_postition_y, angular_postition_z, mgm_x, mgm_y, mgm_z) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)'
-  pgClient.query(
-    insertQuery,
-    [
-      timestamp,
+socket.on('data', async function (data) {
+  try {
+    let jsondata = JSON.parse(data)
+    let {
       acc_x,
       acc_y,
       acc_z,
-      velo_x,
-      velo_y,
-      velo_z,
-      postition_x,
-      postition_y,
-      postition_z,
       angular_velo_x,
       angular_velo_y,
       angular_velo_z,
-      angular_postition_x,
-      angular_postition_y,
-      angular_postition_z,
       mgm_x,
       mgm_y,
       mgm_z,
-    ],
-    (err, res) => {
-      if (err) {
-        console.error('Error inserting data into PostgreSQL:', err)
-      } else {
-        console.log('Data inserted into PostgreSQL:', res)
-      }
-    }
-  )
+    } = jsondata
+    insertDataIntoDB(
+      acc_x,
+      acc_y,
+      acc_z,
+      angular_velo_x,
+      angular_velo_y,
+      angular_velo_z,
+      mgm_x,
+      mgm_y,
+      mgm_z
+    )
+  } catch (error) {
+    console.error('error inserting data', error)
+  }
 })
 
 app.get('/test', (req, res) => {
