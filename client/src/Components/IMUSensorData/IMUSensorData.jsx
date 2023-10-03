@@ -29,7 +29,7 @@ const IMUSensorData = () => {
         // Check if the renderer has already been initialized
         if (!rendererRef.current) {
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth * 0.65, window.innerHeight * 0.6);
+            renderer.setSize(window.innerWidth *0.75, window.innerHeight *0.75);
             sensorElement.innerHTML = '';
             sensorElement.appendChild(renderer.domElement);
             rendererRef.current = renderer;
@@ -39,10 +39,10 @@ const IMUSensorData = () => {
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('white');
-        scene.add(new THREE.HemisphereLight(0xffffcc, 0x333399, 1.0));
-
+        // scene.add(new THREE.HemisphereLight(0xffffff, 0xffffff, 1.0));
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xffffff, 5.5));
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight);
-        camera.position.set(0, 0, -10);
+        camera.position.set(-20, -20, -40);
 
         // Clear previous mesh if it exists
         if (meshRef.current) {
@@ -50,10 +50,16 @@ const IMUSensorData = () => {
             meshRef.current = null;
         }
 
-        new GLTFLoader().load('src/assets/MPU9255.glb', function (model) {
+        new GLTFLoader().load('src/assets/arm.glb', function (model) {
             const { scene: loadedModel } = model;
+            const material = new THREE.MeshBasicMaterial({ color: "gray" });
+            loadedModel.traverse(function(node) {
+                if(node.isMesh) {
+                    node.material = material
+                }
+            })
             scene.add(loadedModel);
-            loadedModel.scale.setScalar(0.3);
+            loadedModel.scale.setScalar(0.15);
             camera.lookAt(loadedModel.position);
             meshRef.current = loadedModel;
         });
@@ -84,7 +90,7 @@ const IMUSensorData = () => {
 
     return (
         <div>
-            <h1>IMU Sensor Data</h1>
+            <h1>Human Activity Sensor Data</h1>
             <div className="container">
                 <div className="left-side">
                     <h2>Acceleration:</h2>
