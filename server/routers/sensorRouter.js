@@ -1,12 +1,11 @@
 const express = require('express');
-const { insertDataIntoDB } = require('../helpers/sensorHelper');
+const { insertDataIntoDB, getDataFromDB } = require('../helpers/sensorHelper');
 const { getDBPool } = require('../database/dbConnection');
 
 const router = new express.Router();
 router.get('sensor/fetch-data', async (req, res) => {
     try{
         const json_data = await getDataFromDB();
-
         res.status(200).send({status: 'ok', data: json_data})
     } catch(e){
         res.status(500).send({status: 'failure'})

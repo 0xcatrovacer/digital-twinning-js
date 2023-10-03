@@ -14,8 +14,8 @@ const getDataFromDB = async() => {
 
     try{
         client = await pool.connect();
-        const x = 'SELECT * FROM public.sensor_data ORDER BY timestamp DESC LIMIT 1';
-        const {rows} = await client.query(x);
+        const fetchQuery = 'SELECT * FROM public.sensor_data ORDER BY timestamp DESC LIMIT 1';
+        const {rows} = await client.query(fetchQuery);
 
         return rows[0];
     } catch(e){
@@ -137,5 +137,6 @@ const insertDataIntoDB = async (
 }
 
 module.exports = {
+    getDataFromDB,
     insertDataIntoDB
 }
