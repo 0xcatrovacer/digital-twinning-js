@@ -47,14 +47,16 @@ socket.on('data', async function (data) {
       mgm_y,
       mgm_z
     )
-
-    /*let l = query;
+    const sqlQuery = 'SELECT COUNT(*) AS rowCount FROM public.sensor_data';
+    let l = sqlQuery;
     setTimeout(()={
-      let m= query;
-      if(l===m){
-        throw error;
+      let m= sqlQuery;
+      if(l === m){
+        throw new Error('No new data found');
+
       }
-    }, 5000);*/
+    }, 5000);
+
   } catch (error) {
     console.error('error inserting data', error)
   }
