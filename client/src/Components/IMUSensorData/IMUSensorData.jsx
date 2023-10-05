@@ -10,7 +10,7 @@ const IMUSensorData = () => {
         acceleration_z: 0.3,
         gyroscope_x: 10,
         gyroscope_y: 0,
-        gyroscope_z: 3,
+        gyroscope_z: 0,
         magnetometer_x: 0.1,
         magnetometer_y: 0.2,
         magnetometer_z: 0.3,
@@ -39,10 +39,10 @@ const IMUSensorData = () => {
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('white');
-        // scene.add(new THREE.HemisphereLight(0xffffff, 0xffffff, 1.0));
-        scene.add(new THREE.HemisphereLight(0xffffff, 0xffffff, 5.5));
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight);
-        camera.position.set(-20, -20, -40);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 4); // Color, Intensity
+        scene.add(ambientLight);
+        const camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 5000);
+        camera.position.set(0, 0, -50);
 
         // Clear previous mesh if it exists
         if (meshRef.current) {
@@ -50,19 +50,17 @@ const IMUSensorData = () => {
             meshRef.current = null;
         }
 
-        new GLTFLoader().load('src/assets/arm.glb', function (model) {
+        new GLTFLoader().load('src/assets/scene.gltf', function (model) {
             const { scene: loadedModel } = model;
-            const material = new THREE.MeshBasicMaterial({ color: "gray" });
-            loadedModel.traverse(function(node) {
-                if(node.isMesh) {
-                    node.material = material
-                }
-            })
+
+
             scene.add(loadedModel);
-            loadedModel.scale.setScalar(0.15);
+            loadedModel.scale.setScalar(0.75);
+         
+
             camera.lookAt(loadedModel.position);
             meshRef.current = loadedModel;
-        });
+          });
 
         const animate = () => {
             if (meshRef.current) {

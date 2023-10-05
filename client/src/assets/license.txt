@@ -1,0 +1,8 @@
+Model Information:
+* title:	Human Male Arm - base mesh
+* source:	https://sketchfab.com/3d-models/human-male-arm-base-mesh-339678870e564316ab573ccf1253dc5e
+* author:	Deftroy (https://sketchfab.com/deftroy)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
