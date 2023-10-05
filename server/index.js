@@ -47,6 +47,14 @@ socket.on('data', async function (data) {
       mgm_y,
       mgm_z
     )
+
+    /*let l = query;
+    setTimeout(()={
+      let m= query;
+      if(l===m){
+        throw error;
+      }
+    }, 5000);*/
   } catch (error) {
     console.error('error inserting data', error)
   }

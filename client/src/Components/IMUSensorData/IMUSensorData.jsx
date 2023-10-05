@@ -29,7 +29,7 @@ const IMUSensorData = () => {
         // Check if the renderer has already been initialized
         if (!rendererRef.current) {
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth *0.75, window.innerHeight *0.75);
+            renderer.setSize(window.innerWidth * 0.65, window.innerHeight * 0.6);
             sensorElement.innerHTML = '';
             sensorElement.appendChild(renderer.domElement);
             rendererRef.current = renderer;
@@ -88,7 +88,7 @@ const IMUSensorData = () => {
 
     return (
         <div>
-            <h1>Human Activity Sensor Data</h1>
+            <h1>IMU Sensor Data</h1>
             <div className="container">
                 <div className="left-side">
                     <h2>Acceleration:</h2>

@@ -1,6 +1,4 @@
 const express = require('express');
-const { insertDataIntoDB } = require('../helpers/sensorHelper');
-const { getDBPool } = require('../database/dbConnection');
 
 const router = new express.Router();
 router.get('sensor/fetch-data', async (req, res) => {
@@ -26,14 +24,8 @@ router.post('/sensor/insert-data', async (req, res) => {
         mgm_z
     } = req.body
 
-    const pool = getDBPool(100);
-    let client;
-
     try {
-        client = await pool.connect();
-
         await insertDataIntoDB(
-            client,
             acc_x, 
             acc_y, 
             acc_z, 
