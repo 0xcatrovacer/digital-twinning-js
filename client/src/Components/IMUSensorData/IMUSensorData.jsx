@@ -1,47 +1,56 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import axios from 'axios'
+;import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import './IMUSensorData.css';
 
 const IMUSensorData = () => {
-    const sensorData = {
-        acceleration_x: 0.1,
-        acceleration_y: 0.2,
-        acceleration_z: 0.3,
-        gyroscope_x: 10,
-        gyroscope_y: 0,
-        gyroscope_z: 0,
-        magnetometer_x: 0.1,
-        magnetometer_y: 0.2,
-        magnetometer_z: 0.3,
-    };
 
     const sensor3DRef = useRef(null);
     const rendererRef = useRef(null);
     const meshRef = useRef(null);
+    const animationFrameID = useRef(null);
+    const currentIndex = useRef(0);
+
+    
+    const [sensorDataArray, setSensorDataArray] = useState([]);
+    const [dataFetched, setDataFetched] = useState(false);
+    const [currentDisplayIndex, setCurrentDisplayIndex] = useState(0);
+
 
     useEffect(() => {
-        const sensorElement = sensor3DRef.current;
-        const gyroscope_x = parseFloat(sensorData.gyroscope_x);
-        const gyroscope_y = parseFloat(sensorData.gyroscope_y);
-        const gyroscope_z = parseFloat(sensorData.gyroscope_z);
+        async function getData() {
+            const response = await axios.get('http://127.0.0.1:8000/sensor/fetch-data');
+            setSensorDataArray(response.data.data);
+            setDataFetched(true);
+        }
+        
+        getData();
+    }, [])
 
-        // Check if the renderer has already been initialized
+    useEffect(() => {
+        if (!dataFetched) return;
+
+        const sensorElement = sensor3DRef.current;
+
+        // Initialization of renderer
         if (!rendererRef.current) {
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth * 0.65, window.innerHeight * 0.6);
+            renderer.setSize(window.innerWidth * 0.75, window.innerHeight * 0.6);
             sensorElement.innerHTML = '';
             sensorElement.appendChild(renderer.domElement);
             rendererRef.current = renderer;
         }
-
         const renderer = rendererRef.current;
 
+        // Initialization of scene
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('white');
         const ambientLight = new THREE.AmbientLight(0xffffff, 4); // Color, Intensity
         scene.add(ambientLight);
-        const camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 5000);
+
+        // Initialization of camera
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 5000);
         camera.position.set(0, 0, -50);
 
         // Clear previous mesh if it exists
@@ -50,61 +59,88 @@ const IMUSensorData = () => {
             meshRef.current = null;
         }
 
-        new GLTFLoader().load('src/assets/scene.gltf', function (model) {
-            const { scene: loadedModel } = model;
+        if (!meshRef.current) {
+            new GLTFLoader().load('src/assets/scene.gltf', function (model) {
+                const { scene: loadedModel } = model;
+                scene.add(loadedModel);
+                loadedModel.scale.setScalar(1);
+                camera.lookAt(loadedModel.position);
+                meshRef.current = loadedModel;
 
-
-            scene.add(loadedModel);
-            loadedModel.scale.setScalar(0.75);
-         
-
-            camera.lookAt(loadedModel.position);
-            meshRef.current = loadedModel;
-          });
+                // Start the animation only after the model has been loaded
+                animate();
+            });
+        } else {
+            animate();
+        }
 
         const animate = () => {
+            // Retrieve the current sensor data again inside the animate function
+            const currentSensorData = sensorDataArray[currentIndex.current];
+            const angular_position_x = parseFloat(currentSensorData.angular_position_x);
+            const angular_position_y = parseFloat(currentSensorData.angular_position_y);
+            const angular_position_z = parseFloat(currentSensorData.angular_position_z);
+            
             if (meshRef.current) {
-                if (!isNaN(gyroscope_x) && !isNaN(gyroscope_y) && !isNaN(gyroscope_z)) {
-                    const rotationY = gyroscope_y;
-                    const rotationZ = gyroscope_z;
-                    const rotationX = gyroscope_x;
+                if (!isNaN(angular_position_x) && !isNaN(angular_position_y) && !isNaN(angular_position_z)) {
+                    const rotationY = angular_position_y;
+                    const rotationZ = angular_position_z;
+                    const rotationX = angular_position_x;
                     meshRef.current.rotation.set(rotationX, rotationY, rotationZ);
                 }
             }
-
+            
             renderer.render(scene, camera);
-            requestAnimationFrame(animate);
-        };
 
-        animate();
+            if (currentIndex.current < sensorDataArray.length - 1) {
+                animationFrameID.current = setTimeout(() => {
+                    const nextIndex = currentIndex.current + 1;
+                    setCurrentDisplayIndex(nextIndex);
+                    currentIndex.current = nextIndex;
 
-        return () => {
-            if (rendererRef.current) {
-                rendererRef.current.dispose();
-                rendererRef.current = null;
+                    animate();
+                }, 50);
             }
         };
-    }, [sensorData]);
+
+    return () => {
+        if (rendererRef.current) {
+            rendererRef.current.dispose();
+            rendererRef.current = null;
+        }
+
+        if (animationFrameID.current) {
+            cancelAnimationFrame(animationFrameID.current);
+        }
+    };
+
+}, [dataFetched]);
+
 
     return (
-        <div>
+        sensorDataArray.length > 0 && <div>
             <h1>IMU Sensor Data</h1>
             <div className="container">
                 <div className="left-side">
                     <h2>Acceleration:</h2>
-                    <p>x: {sensorData.acceleration_x}</p>
-                    <p>y: {sensorData.acceleration_y}</p>
-                    <p>z: {sensorData.acceleration_z}</p>
+                    <p>x: {sensorDataArray[currentDisplayIndex].acc_x}</p>
+                    <p>y: {sensorDataArray[currentDisplayIndex].acc_y}</p>
+                    <p>z: {sensorDataArray[currentDisplayIndex].acc_z}</p>
 
-                    <h2>Gyroscope:</h2>
-                    <p>x: {sensorData.gyroscope_x}</p>
-                    <p>y: {sensorData.gyroscope_y}</p>
-                    <p>z: {sensorData.gyroscope_z}</p>
+                    <h2>Linear Position:</h2>
+                    <p>x: {sensorDataArray[currentDisplayIndex].position_x}</p>
+                    <p>y: {sensorDataArray[currentDisplayIndex].position_y}</p>
+                    <p>z: {sensorDataArray[currentDisplayIndex].position_z}</p>
+
+                    <h2>Angular Position:</h2>
+                    <p>x: {sensorDataArray[currentDisplayIndex].angular_position_x}</p>
+                    <p>y: {sensorDataArray[currentDisplayIndex].angular_position_y}</p>
+                    <p>z: {sensorDataArray[currentDisplayIndex].angular_position_z}</p>
 
                     <h2>Magnetometer:</h2>
-                    <p>x: {sensorData.magnetometer_x}</p>
-                    <p>y: {sensorData.magnetometer_y}</p>
-                    <p>z: {sensorData.magnetometer_z}</p>
+                    <p>x: {sensorDataArray[currentDisplayIndex].mgm_x}</p>
+                    <p>y: {sensorDataArray[currentDisplayIndex].mgm_y}</p>
+                    <p>z: {sensorDataArray[currentDisplayIndex].mgm_z}</p>
                 </div>
                 <div className="right-side">
                     <h2>3D Model:</h2>
