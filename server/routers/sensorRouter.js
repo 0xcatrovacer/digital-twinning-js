@@ -1,7 +1,8 @@
 const express = require('express');
+const { getDataFromDB } = require('../helpers/sensorHelper')
 
 const router = new express.Router();
-router.get('sensor/fetch-data', async (req, res) => {
+router.get('/sensor/fetch-data', async (req, res) => {
     try{
         const json_data = await getDataFromDB();
 
@@ -39,10 +40,10 @@ router.post('/sensor/insert-data', async (req, res) => {
 
         res.status(200).send({status: 'ok'})
     } catch (e) {
-        res.status(500).send({status: 'failure'})
+        res.status(500).send({status: 'failure', error: e})
     }
 })
 
 module.exports = {
-    sensorRouter
+    router
 }
