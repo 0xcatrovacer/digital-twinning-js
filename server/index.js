@@ -8,9 +8,19 @@ const http = require('http')
 const { error } = require('console')
 const app = express()
 const port = process.env.PORT || 8000
-const pgClient = getDBPool()
 
-// pgClient.connect()
+app.use((req, res, next) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Headers", "*");
+    res.set("Access-Control-Allow-Methods", "*");
+    if (req.method === "OPTIONS") {
+        res.status(200).end();
+        return;
+    }
+    next();
+});
+
+app.use(express.json());
 
 // const thost = process.env.SENSOR_HOST
 // const tport = process.env.SENSOR_PORT
