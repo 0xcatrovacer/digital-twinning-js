@@ -45,7 +45,12 @@ const IMUSensorData = () => {
 
         // Initialization of scene
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color('white');
+
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('src/assets/textures/grid.jpg', function(texture) {
+            scene.background = texture;
+        });
+
         const ambientLight = new THREE.AmbientLight(0xffffff, 4); // Color, Intensity
         scene.add(ambientLight);
 
@@ -60,7 +65,7 @@ const IMUSensorData = () => {
         }
 
         if (!meshRef.current) {
-            new GLTFLoader().load('src/assets/scene.gltf', function (model) {
+            new GLTFLoader().load('src/assets/scene4.gltf', function (model) {
                 const { scene: loadedModel } = model;
                 scene.add(loadedModel);
                 loadedModel.scale.setScalar(1);
@@ -99,7 +104,7 @@ const IMUSensorData = () => {
                     currentIndex.current = nextIndex;
 
                     animate();
-                }, 50);
+                }, 200);
             }
         };
 
