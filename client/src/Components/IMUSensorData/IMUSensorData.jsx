@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import axios from 'axios'
-;import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import axios from 'axios';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import './IMUSensorData.css';
 
 const IMUSensorData = () => {
@@ -104,7 +104,7 @@ const IMUSensorData = () => {
                     currentIndex.current = nextIndex;
 
                     animate();
-                }, 200);
+                }, 50);
             }
         };
 

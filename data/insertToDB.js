@@ -82,6 +82,10 @@ const parseCSV = async () => {
 
     const paramsQuery = createParameters(columns.length);
 
+    const deleteQuery = `DELETE FROM public.sensor_data`;
+
+    await client.query(deleteQuery);
+
     const insertQuery = `INSERT INTO public.sensor_data (${[...columns].join(",")}) VALUES(${paramsQuery}) ON CONFLICT DO NOTHING`;
 
 
