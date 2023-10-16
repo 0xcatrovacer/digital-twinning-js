@@ -65,10 +65,17 @@ const IMUSensorData = () => {
         }
 
         const meshGroup = new THREE.Group();
+        const stationaryMeshGroup = new THREE.Group();
 
         if (!meshRef.current) {
             new GLTFLoader().load('src/assets/robot_arm.gltf', function (model) {
                 const { scene: loadedModel } = model;
+
+                loadedModel.traverse(function (child) {
+                    if (child.isMesh) {
+                        console.log('Mesh Name:', child.name);
+                    }
+                });
                 
                 const meshesToAdd = [];
                 loadedModel.traverse(function (child) {
@@ -90,16 +97,16 @@ const IMUSensorData = () => {
                 meshesToAdd.forEach(mesh => {
                     switch (mesh.name) {
                         case "Cylinder017_Material001_0":
-                            mesh.position.set(0, 0, 130);
+                            mesh.position.set(0, -50, 105);
                             break;
                         case "Cylinder028_Material001_0":
-                            mesh.position.set(0, 0, 110);
+                            mesh.position.set(0, -50, 85);
                             break;
                         case "Cylinder015_Material001_0":
-                            mesh.position.set(0, 0, 80);
+                            mesh.position.set(0, -50, 55);
                             break;
                         case "Cylinder019_Material001_0":
-                            mesh.position.set(0, 0, 50);
+                            mesh.position.set(0, -30, 25);
                             break;
                         case "Cylinder007_Material001_0":
                             mesh.position.set(0, 0, 0);
@@ -108,24 +115,48 @@ const IMUSensorData = () => {
                             break;
                     }
                     meshGroup.add(mesh);
-                });
-                
+                }); 
+
+                const stationaryMeshes = [];
                 loadedModel.traverse(function (child) {
-                    switch (child.name) {
-                        case "Cylinder017_Material001_0":
-                        case "Cylinder028_Material001_0":
-                        case "Cylinder015_Material001_0":
-                        case "Cylinder019_Material001_0":
-                        case "Cylinder007_Material001_0":
-                            loadedModel.remove(child); // Remove these meshes from the loadedModel
+                    if (child.isMesh) {
+                        switch (child.name) {
+                            case "Cylinder018_Material001_0":
+                            case "Cylinder011_Material001_0":
+                            case "Cylinder010_Material001_0":
+                            case "Cylinder009_Material001_0":
+                                stationaryMeshes.push(child.clone()); // clone the meshes instead of directly pushing
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
+
+
+                stationaryMeshes.forEach(mesh => {
+                    switch (mesh.name) {
+                        case "Cylinder018_Material001_0":
+                            mesh.position.set(0, 0, 105);
+                            break;
+                        case "Cylinder011_Material001_0":
+                            mesh.position.set(0, 0, 85);
+                            break;
+                        case "Cylinder010_Material001_0":
+                            mesh.position.set(0, 0, 55);
+                            break;
+                        case "Cylinder009_Material001_0":
+                            mesh.position.set(0, 0, 25);
                             break;
                         default:
                             break;
                     }
-                });
+                    stationaryMeshGroup.add(mesh);
+                }); 
 
-                loadedModel.position.set(0, -280, 0);
-                scene.add(loadedModel);
+                stationaryMeshGroup.position.set(0, -280, 30);
+                stationaryMeshGroup.rotation.set(-1.57, 0, 0)
+                scene.add(stationaryMeshGroup);
                 
                 meshGroup.position.set(0, 0, 0);
                 scene.add(meshGroup);
@@ -134,6 +165,7 @@ const IMUSensorData = () => {
                 meshRef.current = meshGroup;
 
                 meshGroup.scale.setScalar(2)
+                stationaryMeshGroup.scale.setScalar(2);
                 
                 animate();
             });
