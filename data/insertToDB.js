@@ -21,7 +21,7 @@ const readCSV = async (filePath) => {
     });
 }
 
-readCSV('/data/output_data_fall3.csv');
+readCSV('./parsed-csv-data/output_data_adl12.csv');
 
 const createParameters = (count) => {
     let params = [];
