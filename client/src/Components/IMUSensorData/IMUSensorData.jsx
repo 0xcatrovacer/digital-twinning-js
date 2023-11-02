@@ -236,10 +236,10 @@ const IMUSensorData = () => {
                     <p>y: {sensorDataArray[currentDisplayIndex].angular_position_y}</p>
                     <p>z: {sensorDataArray[currentDisplayIndex].angular_position_z}</p>
 
-                    <h2>Magnetometer:</h2>
+                    {/* <h2>Magnetometer:</h2>
                     <p>x: {sensorDataArray[currentDisplayIndex].mgm_x}</p>
                     <p>y: {sensorDataArray[currentDisplayIndex].mgm_y}</p>
-                    <p>z: {sensorDataArray[currentDisplayIndex].mgm_z}</p>
+                    <p>z: {sensorDataArray[currentDisplayIndex].mgm_z}</p> */}
                 </div>
                 <div className="right-side">
                     <h2>3D Model:</h2>
